@@ -1,4 +1,5 @@
 import * as defaultOptions from './defaults';
+import {getActionTypes} from './helpers';
 
 export default (options) => ({getState,dispatch}) => next => action => {
   const {client,onSuccess,onError,onComplete} = {...defaultOptions,...options};

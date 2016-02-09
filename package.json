@@ -1,11 +1,11 @@
 {
   "name": "redux-axios-middleware",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Redux middleware for fetching data with axios HTTP client",
   "main": "lib/index.js",
   "scripts": {
-    "build": "./node_modules/.bin/babel -d lib/ src/",
-    "prepublish": "npm run build"
+    "build": "node_modules/.bin/babel ./src -d ./lib --ignore '__tests__'",
+    "prepublish": "node ./npm-scripts/postinstall.js"
   },
   "repository": {
     "type": "git",
@@ -17,11 +17,9 @@
     "url": "https://github.com/svrcekmichal/redux-axios-middleware/issues"
   },
   "homepage": "https://github.com/svrcekmichal/redux-axios-middleware",
-  "dependencies": {},
   "devDependencies": {
-    "babel": "^6.3.26",
+    "babel-cli": "^6.5.1",
     "babel-plugin-transform-object-rest-spread": "^6.3.13",
-    "babel-preset-es2015": "^6.3.13",
-    "babel-preset-react": "^6.3.13"
+    "babel-preset-es2015": "^6.3.13"
   }
 }
