@@ -13,7 +13,8 @@ npm i -S redux-axios-middleware
 ### Use middleware
 
 By default you only need to import middleware from package and add it to redux middlewares
-and execute it with options, which must contain key `client` with axios instance;
+and execute it with first aargument being with axios instance. second optional argument are middleware
+options for customizing
 
 ```javascript
 import {createStore, applyMiddleware} from 'redux';
@@ -30,7 +31,7 @@ let store = createStore(
   applyMiddleware(
     //all middlewares
     ...
-    axiosMiddleware({client}), //options can optionally contain onSuccess, onError, onComplete
+    axiosMiddleware(client), //options can optionally contain onSuccess, onError, onComplete
     ...
   )
 )
@@ -112,7 +113,7 @@ By default next middleware will receive new action object:
 
 ### Middleware options
 
-When adding middlewre to redux you can specify 3 new keys except `client`
+When adding middleware to redux you can specify 3 new keys
 
 1. `onSuccess` can change default on success handling
 ```javascript
