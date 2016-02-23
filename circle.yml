@@ -1,0 +1,11 @@
+machine:
+  node:
+    version: 4.0
+  environment:
+    CONTINUOUS_INTEGRATION: true
+
+dependencies:
+  cache_directories:
+    - node_modules
+  override:
+    - npm prune && npm install
