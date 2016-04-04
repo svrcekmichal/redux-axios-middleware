@@ -1,30 +1,45 @@
-import { getActionTypes } from './helpers';
+import { getActionTypes } from './getActionTypes';
 
-export const onSuccess = ({ action, next, response }) => {
+export const isAxiosRequest = action => action.payload && action.payload.request;
+
+export const getRequestConfig = action => action.payload.request;
+
+export const onSuccess = ({ action, next, response }, options) => {
+  const { data, ...responseMeta } = response; // eslint-disable-line no-use-before-define
+  const { payload: requestPayload, meta: requestMeta = {}, ...restOfAction } = action; // eslint-disable-line no-use-before-define
+
   const nextAction = {
-    ...action,
-    payload: { ...action.payload, response },
-    type: getActionTypes(action)[1]
+    ...restOfAction,
+    payload: data,
+    meta: {
+      response: responseMeta,
+      ...requestPayload,
+      ...requestMeta
+    },
+    type: getActionTypes(action, options)[1]
   };
 
   next(nextAction);
   return nextAction;
 };
 
-export const onError = ({ action, next, error }) => {
-  if (error instanceof Error) {
-    console.log('clientMiddleware axios error', error);
-  }
-
-  const { payload, ...rest } = action; // eslint-disable-line no-use-before-define
+export const onError = ({ action, next, error }, options) => {
+  const { payload: requestPayload, meta: requestMeta, ...restOfAction } = action; // eslint-disable-line no-use-before-define
+  const { data, ...restOfError } = error; // eslint-disable-line no-use-before-define
   const nextAction = {
-    ...rest,
-    error: { ...action.payload, error },
-    type: getActionTypes(action)[2]
+    ...restOfAction,
+    error: data,
+    meta: {
+      response: restOfError,
+      ...requestPayload,
+      ...requestMeta
+    },
+    type: getActionTypes(action, options)[2]
   };
 
   next(nextAction);
   return nextAction;
 };
 
-export const onComplete = () => {};
+export const onComplete = () => {
+};

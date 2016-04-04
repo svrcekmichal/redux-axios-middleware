@@ -16,13 +16,13 @@ By default you only need to import middleware from package and add it to redux m
 and execute it with first aargument being with axios instance. second optional argument are middleware
 options for customizing
 
-```javascript
+```js
 import {createStore, applyMiddleware} from 'redux';
 import axios from 'axios';
 import axiosMiddleware from 'redux-axios-middleware';
 
 const client = axios.create({ //all axios can be used, shown in axios documentation
-  baseUrl:'http://localhost:8080/api',
+  baseURL:'http://localhost:8080/api',
   responseType: 'json'
 });
 
@@ -31,7 +31,7 @@ let store = createStore(
   applyMiddleware(
     //all middlewares
     ...
-    axiosMiddleware(client), //options can optionally contain onSuccess, onError, onComplete
+    axiosMiddleware(client), //second parameter options can optionally contain onSuccess, onError, onComplete, successSuffix, errorSuffix
     ...
   )
 )
@@ -43,13 +43,16 @@ Every action which have `payload.request` defined will be handled by middleware.
 definitions.
 
 1. use `action.type` with string name
-action with type will be dispatched on start, and then followed by type suffixed with `_SUCCESS` on success, or `_FAIL` on
-axios on server error
+action with type will be dispatched on start, and then followed by type suffixed with underscore and
+success suffix on success, or error suffix on error
+
+defaults: success suffix = "_SUCCESS" error suffix = "_FAIL"
+
 
 ```javascript
 export function loadCategories() {
   return {
-    type: 'LOAD', //on start LOAD, then LOAD_SUCCESS or LOAD_FAIL
+    type: 'LOAD',
     payload: {
       request:{
         url:'/categories'
@@ -84,30 +87,42 @@ By default next middleware will receive new action object:
 ```javascript
 {
   type: 'AWESOME', //success type
-  payload: {
+  payload: [1,2,3] //data from response
+  meta: {
     request:{
-      url:'/categories'
+      url:'/categories' //whole reqquest from payload
     },
     response: {
-      //response object from axios
-    }
+      // ... axios response object without data
+      status:200,
+      statusTest:'OK',
+      headers: {},
+      config: {}
+    },
+    // all meta keys
   }
 }
 ```
 
-2.on error
+2. on error
 
-```javascript
+Error action is same as success action with one difference, there's no key `payload`, but now there's `error`;
+
+```js
 {
-  type: 'OH_NO',
-  error: {
-    request:{
-      url:'/categories'
-    },
-    error: {
-      //error object from axios
-    }
-  }
+    type:'OH_NO',
+    error:['Error1', 'Error2'] //data from axios response error
+    // ... same as success
+}
+```
+
+3. if axios failed fataly
+
+```js
+{
+   type:'redux-axios-middleware/FATAL_ERROR',
+   error: Error, // instance of error,
+   meta: ActionObject // action which fataled
 }
 ```
 
@@ -137,12 +152,13 @@ export const onComplete = ({action, next, getState, dispatch}) => {
 }
 ```
 
+4. `errorSuffix` and `successSuffix` for changing keys suffixed to action type 
+
 ## License
 
 MIT
 
 ## Acknowledgements
 
-[Dan Abramov](https://github.com/gaearon) for Redux and a great example at [real-world](https://github.com/rackt/redux/blob/master/examples/real-world/middleware/api.js)
-
+[Dan Abramov](https://github.com/gaearon) for Redux
 [Matt Zabriskie](https://github.com/mzabriskie) for [Axios](https://github.com/mzabriskie/axios). A Promise based HTTP client for the browser and node.js

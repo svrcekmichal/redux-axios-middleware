@@ -1,12 +1,14 @@
 {
   "name": "redux-axios-middleware",
-  "version": "0.2.0",
+  "version": "0.4.0-rc.1",
   "description": "Redux middleware for fetching data with axios HTTP client",
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "npm run lint && npm run build",
     "build": "node_modules/.bin/babel ./src -d ./lib --ignore '__tests__'",
-    "lint": "eslint -c .eslintrc src"
+    "lint": "eslint -c .eslintrc src",
+    "test": "mocha --compilers js:babel-register --require ./test/test_helper.js",
+    "test:watch": "npm run test -- --watch"
   },
   "repository": {
     "type": "git",
@@ -23,9 +25,12 @@
     "babel-eslint": "^5.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.3.13",
     "babel-preset-es2015": "^6.3.13",
+    "chai": "^3.5.0",
+    "chai-shallow-deep-equal": "^1.4.0",
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-import": "^1.0.0-beta.0",
-    "eslint-plugin-react": "^4.0.0"
+    "eslint-plugin-react": "^4.0.0",
+    "mocha": "^2.4.5"
   }
 }
