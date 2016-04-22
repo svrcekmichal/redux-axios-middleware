@@ -1,16 +1,15 @@
 import * as defaultOptions from './defaults';
 import { getActionTypes } from './getActionTypes';
-import axios from 'axios';
 
 let interceptorsBound = false;
 
-function bindInterceptors(getState, { requestInterceptors = [], responseInterceptors = [] } = {}) {
+function bindInterceptors(client, getState, { requestInterceptors = [], responseInterceptors = [] } = {}) {
   requestInterceptors.forEach((interceptor) => {
-    axios.interceptors.request.use(interceptor.bind(null, getState));
+    client.interceptors.request.use(interceptor.bind(null, getState));
   });
 
   responseInterceptors.forEach((interceptor) => {
-    axios.interceptors.response.use(interceptor.bind(null, getState));
+    client.interceptors.response.use(interceptor.bind(null, getState));
   });
 
   interceptorsBound = true;
@@ -25,7 +24,7 @@ export default (client, userOptions = {}) => {
     }
 
     if (options.interceptors && !interceptorsBound) {
-      bindInterceptors(getState, options.interceptors);
+      bindInterceptors(client, getState, options.interceptors);
     }
     const [REQUEST] = getActionTypes(action, options);
     next({ ...action, type: REQUEST });
