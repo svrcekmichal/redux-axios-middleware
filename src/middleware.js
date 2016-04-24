@@ -3,12 +3,12 @@ import { getActionTypes } from './getActionTypes';
 
 let interceptorsBound = false;
 
-function bindInterceptors(client, getState, { requestInterceptors = [], responseInterceptors = [] } = {}) {
-  requestInterceptors.forEach((interceptor) => {
+function bindInterceptors(client, getState, { request = [], response = [] } = {}) {
+  request.forEach((interceptor) => {
     client.interceptors.request.use(interceptor.bind(null, getState));
   });
 
-  responseInterceptors.forEach((interceptor) => {
+  response.forEach((interceptor) => {
     client.interceptors.response.use(interceptor.bind(null, getState));
   });
 
