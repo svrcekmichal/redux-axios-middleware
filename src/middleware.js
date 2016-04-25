@@ -1,11 +1,30 @@
 import * as defaultOptions from './defaults';
 import { getActionTypes } from './getActionTypes';
 
+let interceptorsBound = false;
+
+function bindInterceptors(client, getState, { request = [], response = [] } = {}) {
+  request.forEach((interceptor) => {
+    client.interceptors.request.use(interceptor.bind(null, getState));
+  });
+
+  response.forEach((interceptor) => {
+    client.interceptors.response.use(interceptor.bind(null, getState));
+  });
+
+  interceptorsBound = true;
+}
+
 export default (client, userOptions = {}) => {
   const options = { ...defaultOptions, ...userOptions };
+
   return ({ getState, dispatch }) => next => action => {
     if (!options.isAxiosRequest(action)) {
       return next(action);
+    }
+
+    if (options.interceptors && !interceptorsBound) {
+      bindInterceptors(client, getState, options.interceptors);
     }
     const [REQUEST] = getActionTypes(action, options);
     next({ ...action, type: REQUEST });
