@@ -12,7 +12,7 @@ export const getActionTypes = (action, {
   } else if (typeof action.types !== 'undefined') {
     types = action.types;
   } else {
-    throw new Error('Action which matched axios middleware did\'t have "type" or "types" key');
+    throw new Error('Action which matched axios middleware needs to have "type" or "types" key which is not null');
   }
   return types;
 };
