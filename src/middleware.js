@@ -29,28 +29,23 @@ export default (client, userOptions = {}) => {
     const [REQUEST] = getActionTypes(action, options);
     next({ ...action, type: REQUEST });
 
-    return new Promise((resolve, reject) => {
-      client.request(options.getRequestConfig(action))
-        .then(
-          (response) => {
-            const newAction = options.onSuccess({ action, next, response, getState, dispatch }, options);
+    return client.request(options.getRequestConfig(action))
+      .then(
+        (response) => {
+          const newAction = options.onSuccess({ action, next, response, getState, dispatch }, options);
+          options.onComplete({ action: newAction, next, getState, dispatch }, options);
+
+          return response;
+        },
+        (error) => {
+          if (error instanceof Error) {
+            next({ type: 'redux-axios-middleware/FATAL_ERROR', error, meta: action });
+            console.log('clientMiddleware axios error', error);
+          } else {
+            const newAction = options.onError({ action, next, error, getState, dispatch }, options);
             options.onComplete({ action: newAction, next, getState, dispatch }, options);
-
-            const { data: payload, ...responseMeta } = response;
-            resolve({ payload, meta: { ...responseMeta }, action: newAction });
-          },
-          (error) => {
-            if (error instanceof Error) {
-              next({ type: 'redux-axios-middleware/FATAL_ERROR', error, meta: action });
-              console.log('clientMiddleware axios error', error);
-            } else {
-              const newAction = options.onError({ action, next, error, getState, dispatch }, options);
-              options.onComplete({ action: newAction, next, getState, dispatch }, options);
-
-              const { data: payload, ...responseMeta } = error;
-              reject({ payload, meta: { ...responseMeta }, action: newAction });
-            }
-          });
-    });
+          }
+          return Promise.reject(error);
+        });
   };
 };
