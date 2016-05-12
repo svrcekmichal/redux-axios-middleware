@@ -57,20 +57,15 @@ describe('defaults', () => {
         }
       };
 
-      const { data, ...metaResponse } = response;
       onSuccess({action, next, response});
       expect(resultAction).to.shallowDeepEqual({
         type: getActionTypes(action)[1],
-        payload:data,
-        meta: {
-          request: action.payload.request,
-          response: metaResponse
-        }
+        payload:response
       })
 
     });
 
-    it('should move other keys than request to meta', () => {
+    it('should move previous action to meta', () => {
 
       const action = {
         type:'REQUEST',
@@ -84,26 +79,7 @@ describe('defaults', () => {
 
       onSuccess({action, next, response});
       expect(resultAction).to.shallowDeepEqual({
-        meta: { moveKey: 'this will move to meta' }
-      })
-
-    });
-
-    it('should preserve not used top level keys', () => {
-
-      const action = {
-        type:'REQUEST',
-        notUsed: true,
-        payload:{
-          request:{
-            url:'/request-url'
-          }
-        }
-      };
-
-      onSuccess({action, next, response});
-      expect(resultAction).to.shallowDeepEqual({
-        notUsed: true
+        meta: { previousAction: action }
       })
 
     });
@@ -139,42 +115,17 @@ describe('defaults', () => {
 
       onError({action, next, error});
 
-      const { data, ...metaResponse } = error;
       expect(resultAction).to.shallowDeepEqual({
         type: getActionTypes(action)[2],
-        error: data,
-        meta: {
-          request: action.payload.request,
-          response: metaResponse
-        }
+        error
       })
 
     });
 
-    it('should move payload to meta', () => {
+    it('should move previous action to meta', () => {
 
       const action = {
         type:'REQUEST',
-        payload:{
-          moveKey: 'this will move to meta',
-          request:{
-            url:'/request-url'
-          }
-        }
-      };
-
-      onError({action, next, error});
-      expect(resultAction).to.shallowDeepEqual({
-        meta: { moveKey: 'this will move to meta' }
-      })
-
-    });
-
-    it('should not touch not used top level keys', () => {
-
-      const action = {
-        type:'REQUEST',
-        notUsed: true,
         payload:{
           request:{
             url:'/request-url'
@@ -184,7 +135,7 @@ describe('defaults', () => {
 
       onError({action, next, error});
       expect(resultAction).to.shallowDeepEqual({
-        notUsed: true
+        meta: { previousAction: action }
       })
 
     });
