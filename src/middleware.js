@@ -35,17 +35,12 @@ export default (client, userOptions = {}) => {
           const newAction = options.onSuccess({ action, next, response, getState, dispatch }, options);
           options.onComplete({ action: newAction, next, getState, dispatch }, options);
 
-          return response;
+          return newAction;
         },
         (error) => {
-          if (error instanceof Error) {
-            next({ type: 'redux-axios-middleware/FATAL_ERROR', error, meta: action });
-            console.log('clientMiddleware axios error', error);
-          } else {
-            const newAction = options.onError({ action, next, error, getState, dispatch }, options);
-            options.onComplete({ action: newAction, next, getState, dispatch }, options);
-          }
-          return Promise.reject(error);
+          const newAction = options.onError({ action, next, error, getState, dispatch }, options);
+          options.onComplete({ action: newAction, next, getState, dispatch }, options);
+          return Promise.reject(newAction);
         });
   };
 };
