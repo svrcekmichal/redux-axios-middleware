@@ -42,12 +42,11 @@ let store = createStore(
 Every action which have `payload.request` defined will be handled by middleware. There are two possible type
 definitions.
 
-1. use `action.type` with string name
+- use `action.type` with string name
 action with type will be dispatched on start, and then followed by type suffixed with underscore and
 success suffix on success, or error suffix on error
 
 defaults: success suffix = "_SUCCESS" error suffix = "_FAIL"
-
 
 ```javascript
 export function loadCategories() {
@@ -62,8 +61,7 @@ export function loadCategories() {
 }
 ```
 
-
-2. use `action.types` with array of types `[REQUEST,SUCCESS,FAILURE]`
+- use `action.types` with array of types `[REQUEST,SUCCESS,FAILURE]`
 `REQUEST` will be dispatched on start, then `SUCCESS` or `FAILURE` after request result
 
 ```javascript
@@ -79,11 +77,43 @@ export function loadCategories() {
 }
 ```
 
+Actions that are handled by this middleware return a promise.  This gives you the ability to chain actions.  A good example of this might be a form.  In the form you might dispatch an actions to store the form values.  The normal flow of the action into the reducers would not be altered but you can chain a then/catch onto the initial dispatch.
+
+```javascript
+this.props.saveForm(formData)
+  .then(() => {
+    // router the user away
+    this.context.router.push("/my/home/page")
+  })
+  .catch((response) => {
+    //handle form errors
+  })
+```
+
+Another example might be a set of actions that you want dispatched together.
+
+```javascript
+Promise.all([
+  dispatch(foo()),
+  dispatch(bar()),
+  dispatch(bam()),
+  dispatch(boom())
+
+]).then(() => {
+  dispatch(
+    loginSuccess(
+      token
+    )
+  )
+})
+```
+
 ### Next middleware
 
 By default next middleware will receive new action object:
 
-1. on success
+#### on success
+
 ```javascript
 {
   type: 'AWESOME', //success type
@@ -104,7 +134,7 @@ By default next middleware will receive new action object:
 }
 ```
 
-2. on error
+#### on error
 
 Error action is same as success action with one difference, there's no key `payload`, but now there's `error`;
 
@@ -116,7 +146,7 @@ Error action is same as success action with one difference, there's no key `payl
 }
 ```
 
-3. if axios failed fataly
+#### if axios failed fataly
 
 ```js
 {
