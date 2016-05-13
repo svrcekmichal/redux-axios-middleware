@@ -5,36 +5,36 @@ export const isAxiosRequest = action => action.payload && action.payload.request
 export const getRequestConfig = action => action.payload.request;
 
 export const onSuccess = ({ action, next, response }, options) => {
-  const { data, ...responseMeta } = response; // eslint-disable-line no-use-before-define
-  const { payload: requestPayload, meta: requestMeta = {}, ...restOfAction } = action; // eslint-disable-line no-use-before-define
-
   const nextAction = {
-    ...restOfAction,
-    payload: data,
+    type: getActionTypes(action, options)[1],
+    payload: response,
     meta: {
-      response: responseMeta,
-      ...requestPayload,
-      ...requestMeta
-    },
-    type: getActionTypes(action, options)[1]
+      previousAction: action
+    }
   };
-
   next(nextAction);
   return nextAction;
 };
 
 export const onError = ({ action, next, error }, options) => {
-  const { payload: requestPayload, meta: requestMeta, ...restOfAction } = action; // eslint-disable-line no-use-before-define
-  const { data, ...restOfError } = error; // eslint-disable-line no-use-before-define
+  let errorObject;
+  if (error instanceof Error) {
+    errorObject = {
+      data: error.message,
+      status: 0
+    };
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('HTTP Failure in Axios', error);
+    }
+  } else {
+    errorObject = error;
+  }
   const nextAction = {
-    ...restOfAction,
-    error: data,
+    type: getActionTypes(action, options)[2],
+    error: errorObject,
     meta: {
-      response: restOfError,
-      ...requestPayload,
-      ...requestMeta
-    },
-    type: getActionTypes(action, options)[2]
+      previousAction: action
+    }
   };
 
   next(nextAction);
