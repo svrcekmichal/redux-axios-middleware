@@ -1,6 +1,7 @@
 {
   "name": "redux-axios-middleware",
   "version": "0.4.1",
+  "version": "1.0.0-rc.0",
   "description": "Redux middleware for fetching data with axios HTTP client",
   "main": "lib/index.js",
   "scripts": {
