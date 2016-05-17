@@ -40,7 +40,7 @@ export default (client, userOptions = {}) => {
         (error) => {
           const newAction = options.onError({ action, next, error, getState, dispatch }, options);
           options.onComplete({ action: newAction, next, getState, dispatch }, options);
-          return Promise.reject(newAction);
+          return newAction;
         });
   };
 };
