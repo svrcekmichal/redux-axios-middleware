@@ -1,5 +1,7 @@
 import { getActionTypes } from './getActionTypes';
 
+export const returnRejectedPromiseOnError = false;
+
 export const isAxiosRequest = action => action.payload && action.payload.request;
 
 export const getRequestConfig = action => action.payload.request;
@@ -41,5 +43,4 @@ export const onError = ({ action, next, error }, options) => {
   return nextAction;
 };
 
-export const onComplete = () => {
-};
+export const onComplete = () => {};

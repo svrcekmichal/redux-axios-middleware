@@ -108,28 +108,18 @@ Promise.all([
 })
 ```
 
-### Next middleware
+### Request complete
 
-By default next middleware will receive new action object:
+After request complete, middleware will dispatch new action, 
 
 #### on success
 
 ```javascript
 {
   type: 'AWESOME', //success type
-  payload: [1,2,3] //data from response
+  payload: { ... } //axios response object with data status headers etc.
   meta: {
-    request:{
-      url:'/categories' //whole reqquest from payload
-    },
-    response: {
-      // ... axios response object without data
-      status:200,
-      statusTest:'OK',
-      headers: {},
-      config: {}
-    },
-    // all meta keys
+    previousAction: { ... } //action which triggered request
   }
 }
 ```
@@ -141,48 +131,41 @@ Error action is same as success action with one difference, there's no key `payl
 ```js
 {
     type:'OH_NO',
-    error:['Error1', 'Error2'] //data from axios response error
-    // ... same as success
+    error: { ... }, //axios error response object with data status headers etc.
+    meta: {
+      previousAction: { ... } //action which triggered request
+    }
 }
 ```
 
-#### if axios failed fataly
+#### if axios failed fatally, default erro action with status `0` will be dispatched
 
 ```js
 {
-   type:'redux-axios-middleware/FATAL_ERROR',
-   error: Error, // instance of error,
-   meta: ActionObject // action which fataled
+    type:'OH_NO',
+    error: { 
+      status: 0,
+      ... //rest of axios error response object
+    }, 
+    meta: {
+      previousAction: { ... } //action which triggered request
+    }
 }
 ```
 
 ### Middleware options
 
-When adding middleware to redux you can specify 3 new keys
-
-1. `onSuccess` can change default on success handling
-```javascript
-export const onSuccess = ({action, next, response, getState, dispatch}) => {
-  ... //handle success
-}
-```
-
-2. `onError` can change default on error handling
-```javascript
-export const onError = ({action, next, error, getState, dispatch}) => {
-  ... //handle error
-}
-```
-
-3. `onComplete` can trigger new on complete action
-NOTE: action in `onComplete` handler is the new one returned by `onSuccess` or `onError` handler
-```javascript
-export const onComplete = ({action, next, getState, dispatch}) => {
-  ... //handle complete
-}
-```
-
-4. `errorSuffix` and `successSuffix` for changing keys suffixed to action type 
+| key | type | default value | description |
+|---|---|---|---|
+|successSuffix|string|SUCCESS|default suffix added to success action, for example `{type:"READ"}` will be `{type:"READ_SUCCESS"}`|
+|errorSuffix|string|FAIL|same as above|
+|onSuccess|function|described above|function called if axios resolve with success|
+|onError|function|described above|function called if axios resolve with error|
+|onComplete|function|-|function called after axios resolve|
+|returnRejectedPromiseOnError|bool|false|if `true`, axios onError handler will return `Promise.reject(newAction)` instead of `newAction`|
+|isAxiosRequest|function|function check if action contain `action.payload.request`|check if action is axios request, this is connected to `getRequestConfig`|
+|getRequestConfig|function|return content of `action.payload.request`|if `isAxiosRequest` returns true, this function get axios request config from action|
+|interceptors|object {request: [], response: []}|-|You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is `getState` function|
 
 ## License
 
