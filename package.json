@@ -20,7 +20,7 @@
     "url": "https://github.com/svrcekmichal/redux-axios-middleware/issues"
   },
   "homepage": "https://github.com/svrcekmichal/redux-axios-middleware",
-  "peerDependencies": {
+  "dependencies": {
     "axios": ">= 0.5"
   },
   "devDependencies": {
