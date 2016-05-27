@@ -1,5 +1,5 @@
-import axios from 'axios';
 import * as defaultOptions from './defaults';
+import { getClient } from './getClient';
 import { getActionTypes } from './getActionTypes';
 
 let interceptorsBound = false;
@@ -13,17 +13,10 @@ function bindInterceptors(client, getState, { request = [], response = [] } = {}
   interceptorsBound = true;
 }
 
-function getClientOptionPair(clients, action) {
-  const config = clients[action.payload.client || 'default'];
-  const client = axios.create(config.axios);
-  const options = { ...defaultOptions, ...config.options };
-
-  return { client, options };
-}
-
-export default function (clients) {
+export default function (configs) {
   return ({ getState, dispatch }) => next => action => {
-    const { client, options } = getClientOptionPair(clients, action);
+    const client = getClient(configs, action);
+    const options = { ...defaultOptions, ...client.options };
     if (!options.isAxiosRequest(action)) {
       return next(action);
     }
