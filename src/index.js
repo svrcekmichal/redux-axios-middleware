@@ -1,5 +1,6 @@
 export {
-  default
+  default,
+  multiClientMiddleware
 } from './middleware';
 
 export {
