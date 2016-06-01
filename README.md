@@ -153,6 +153,66 @@ Error action is same as success action with one difference, there's no key `payl
 }
 ```
 
+### Multiple clients
+
+If you are using too many APIs, you can define those clients and put them to middleware. All you have to change is import
+of middleware, which is passed to redux createStore function and defined those clients. 
+
+```
+import { multiClientReducer } from 'redux-axios-middleware';
+createStore(
+ ...
+ multiClientReducer(
+   clients, // described below
+   options // optional, this will be used for all middleware if not overriden by upper options layer
+ )
+)
+```
+
+`clients` object should be map of 
+```
+{ 
+  client: axiosInstance, // instance of axios client created by axios.create(...)
+  options: {} //optional key for passing specific client options
+}
+```
+For example:
+```
+{
+  default: {
+    client: axios.create({
+       baseURL:'http://localhost:8080/api',
+       responseType: 'json' 
+    })
+  },
+  googleMaps: {
+    client: axios.create({
+        baseURL:'https://maps.googleapis.com/maps/api',
+        responseType: 'json' 
+    })
+  }
+}
+```
+
+Now in every dispatched action you can define client used:
+
+```javascript
+export function loadCategories() {
+  return {
+    type: 'LOAD',
+    payload: {
+      client: 'default', //here you can define client used
+      request:{
+        url:'/categories'
+      }
+    }
+  }
+}
+```
+If you don't define client, default value will be used. You can change default client name in middleware options.
+
+
+
 ### Middleware options
 
 Options can be changed on multiple levels. They are merged in following direction:
