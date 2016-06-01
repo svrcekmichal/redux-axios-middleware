@@ -2,9 +2,15 @@ import { getActionTypes } from './getActionTypes';
 
 export const returnRejectedPromiseOnError = false;
 
+export const defaultClientName = 'default';
+
 export const isAxiosRequest = action => action.payload && action.payload.request;
 
 export const getRequestConfig = action => action.payload.request;
+
+export const getClientName = action => action.payload.client;
+
+export const getRequestOptions = action => action.payload.options;
 
 export const onSuccess = ({ action, next, response }, options) => {
   const nextAction = {

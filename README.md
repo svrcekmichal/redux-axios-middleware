@@ -153,19 +153,95 @@ Error action is same as success action with one difference, there's no key `payl
 }
 ```
 
+### Multiple clients
+
+If you are using too many APIs, you can define those clients and put them to middleware. All you have to change is import
+of middleware, which is passed to redux createStore function and defined those clients. 
+
+```
+import { multiClientReducer } from 'redux-axios-middleware';
+createStore(
+ ...
+ multiClientReducer(
+   clients, // described below
+   options // optional, this will be used for all middleware if not overriden by upper options layer
+ )
+)
+```
+
+`clients` object should be map of 
+```
+{ 
+  client: axiosInstance, // instance of axios client created by axios.create(...)
+  options: {} //optional key for passing specific client options
+}
+```
+For example:
+```
+{
+  default: {
+    client: axios.create({
+       baseURL:'http://localhost:8080/api',
+       responseType: 'json' 
+    })
+  },
+  googleMaps: {
+    client: axios.create({
+        baseURL:'https://maps.googleapis.com/maps/api',
+        responseType: 'json' 
+    })
+  }
+}
+```
+
+Now in every dispatched action you can define client used:
+
+```javascript
+export function loadCategories() {
+  return {
+    type: 'LOAD',
+    payload: {
+      client: 'default', //here you can define client used
+      request:{
+        url:'/categories'
+      }
+    }
+  }
+}
+```
+If you don't define client, default value will be used. You can change default client name in middleware options.
+
+
+
 ### Middleware options
 
-| key | type | default value | description |
+Options can be changed on multiple levels. They are merged in following direction:
+```
+default middleware values < middleware config < client config < action config 
+```
+All values except interceptors are overriden, interceptors are merged in same order.
+Some values are changeable only on certain level (can be seen in change level column). 
+
+Legend:
+`M` - middleware config
+`C` - client config
+`A` - action config
+
+
+| key | type | default value | change level | description |
 |---|---|---|---|
-|successSuffix|string|SUCCESS|default suffix added to success action, for example `{type:"READ"}` will be `{type:"READ_SUCCESS"}`|
-|errorSuffix|string|FAIL|same as above|
-|onSuccess|function|described above|function called if axios resolve with success|
-|onError|function|described above|function called if axios resolve with error|
-|onComplete|function|-|function called after axios resolve|
-|returnRejectedPromiseOnError|bool|false|if `true`, axios onError handler will return `Promise.reject(newAction)` instead of `newAction`|
-|isAxiosRequest|function|function check if action contain `action.payload.request`|check if action is axios request, this is connected to `getRequestConfig`|
-|getRequestConfig|function|return content of `action.payload.request`|if `isAxiosRequest` returns true, this function get axios request config from action|
-|interceptors|object {request: [], response: []}|-|You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is `getState` function|
+|successSuffix|string|SUCCESS|`M` `C` `A`|  default suffix added to success action, for example `{type:"READ"}` will be `{type:"READ_SUCCESS"}`|
+|errorSuffix|string|FAIL|`M` `C` `A`|same as above|
+|onSuccess|function|described above|`M` `C` `A`|function called if axios resolve with success|
+|onError|function|described above|`M` `C` `A`|function called if axios resolve with error|
+|onComplete|function|-|`M` `C` `A`|unction called after axios resolve|
+|returnRejectedPromiseOnError|bool|false|`M` `C` `A`|if `true`, axios onError handler will return `Promise.reject(newAction)` instead of `newAction`|
+|isAxiosRequest|function|function check if action contain `action.payload.request`|`M`|check if action is axios request, this is connected to `getRequestConfig`|
+|getRequestConfig|function|return content of `action.payload.request`|`M` `C` `A`|if `isAxiosRequest` returns true, this function get axios request config from action|
+|getClientName|function|returns `action.payload.client` OR `'default'`|`M` `C` `A`|attempts to resolve used client name or use defaultClientName|
+|defaultClientName|every possible object key type|`'default'`|`M`|key which define client used if `getClienName` returned false value|
+|getRequestOptions|function|return `action.payload.options`|`M` `C`|returns options object from action to override some values|
+|interceptors|object {request: [], response: []}|-|`M` `C`|You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is `getState` function|
 
 ## License
 
