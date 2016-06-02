@@ -230,18 +230,18 @@ Legend:
 
 | key | type | default value | change level | description |
 | --- | ---- | ------------- | ------------ | ----------- |
-| successSuffix | string | SUCCESS |`M` `C` `A`|  default suffix added to success action, for example `{type:"READ"}` will be `{type:"READ_SUCCESS"}`|
-| errorSuffix | string | FAIL |`M` `C` `A`| same as above |
-| onSuccess | function | described above |`M` `C` `A`| function called if axios resolve with success |
+| successSuffix | string | SUCCESS | `M` `C` `A` |  default suffix added to success action, for example `{type:"READ"}` will be `{type:"READ_SUCCESS"}`|
+| errorSuffix | string | FAIL | `M` `C` `A`| same as above |
+| onSuccess | function | described above | `M` `C` `A` | function called if axios resolve with success |
 | onError | function | described above | `M` `C` `A` | function called if axios resolve with error |
 | onComplete | function | described above | `M` `C` `A`| function called after axios resolve | 
-| returnRejectedPromiseOnError | bool | false|`M` `C` `A` | if `true`, axios onError handler will return `Promise.reject(newAction)` instead of `newAction` |
-| isAxiosRequest | function|function check if action contain `action.payload.request`|`M`|check if action is axios request, this is connected to `getRequestConfig` |
-| getRequestConfig | function|return content of `action.payload.request` | `M` `C` `A` | if `isAxiosRequest` returns true, this function get axios request config from action |
-| getClientName | function|returns `action.payload.client` OR `'default'` | `M` `C` `A`| attempts to resolve used client name or use defaultClientName |
+| returnRejectedPromiseOnError | bool | false| `M` `C` `A` | if `true`, axios onError handler will return `Promise.reject(newAction)` instead of `newAction` |
+| isAxiosRequest | function | function check if action contain `action.payload.request` | `M` | check if action is axios request, this is connected to `getRequestConfig` |
+| getRequestConfig | function | return content of `action.payload.request` | `M` `C` `A` | if `isAxiosRequest` returns true, this function get axios request config from action |
+| getClientName | function | returns `action.payload.client` OR `'default'` | `M` `C` `A` | attempts to resolve used client name or use defaultClientName |
 | defaultClientName | every possible object key type | `'default'` | `M` | key which define client used if `getClienName` returned false value |
-| getRequestOptions | function | return `action.payload.options`|`M` `C`| returns options object from action to override some values |
-| interceptors | object {request: [], response: []} |  | `M` `C` | You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is `getState` function |
+| getRequestOptions | function | return `action.payload.options` | `M` `C` | returns options object from action to override some values |
+| interceptors | object `{request: [], response: []}` |  | `M` `C` | You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is `getState` function |
 
 ## License
 
