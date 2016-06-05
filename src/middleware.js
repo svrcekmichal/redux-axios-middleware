@@ -1,12 +1,22 @@
 import * as defaultOptions from './defaults';
 import { getActionTypes } from './getActionTypes';
 
+function addInterceptors(target, candidate, getState) {
+  if (!candidate) return;
+
+  const successInterceptor = typeof candidate === 'function' ? candidate : candidate.success;
+  const failureInterceptor = candidate && candidate.failure;
+
+  target.use(successInterceptor && successInterceptor.bind(null, getState),
+             failureInterceptor && failureInterceptor.bind(null, getState));
+}
+
 function bindInterceptors(client, getState, middlewareInterceptors = {}, clientInterceptors = {}) {
-  [...middlewareInterceptors.request, ...clientInterceptors.request].forEach((interceptor) => {
-    client.interceptors.request.use(interceptor.bind(null, getState));
+  [...middlewareInterceptors.request || [], ...clientInterceptors.request || []].forEach((interceptor) => {
+    addInterceptors(client.interceptors.request, interceptor, getState);
   });
-  [...middlewareInterceptors.response, ...clientInterceptors.response].forEach((interceptor) => {
-    client.interceptors.response.use(interceptor.bind(null, getState));
+  [...middlewareInterceptors.response || [], ...clientInterceptors.response || []].forEach((interceptor) => {
+    addInterceptors(client.interceptors.response, interceptor, getState);
   });
 }
 
@@ -50,7 +60,8 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   };
 };
 
-export default (client, customMiddlewareOptions) => {
+export default (client, customMiddlewareOptions, customClientOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
-  return multiClientMiddleware({ [middlewareOptions.defaultClientName]: { client } }, middlewareOptions);
+  const options = customClientOptions || {};
+  return multiClientMiddleware({ [middlewareOptions.defaultClientName]: { client, options } }, middlewareOptions);
 };
