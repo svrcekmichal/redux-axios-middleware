@@ -1,12 +1,18 @@
 import * as defaultOptions from './defaults';
 import { getActionTypes } from './getActionTypes';
 
+function addInterceptors(target, candidate, getState) {
+  const successInterceptor = candidate ? (candidate.success || candidate).bind(null, getState) : null;
+  const failureInterceptor = candidate && candidate.failure ? candidate.failure.bind(null, getState) : null;
+  target.use(successInterceptor, failureInterceptor);
+}
+
 function bindInterceptors(client, getState, middlewareInterceptors = {}, clientInterceptors = {}) {
   [...middlewareInterceptors.request || [], ...clientInterceptors.request || []].forEach((interceptor) => {
-    client.interceptors.request.use(interceptor.bind(null, getState));
+    addInterceptors(client.interceptors.request, interceptor, getState);
   });
   [...middlewareInterceptors.response || [], ...clientInterceptors.response || []].forEach((interceptor) => {
-    client.interceptors.response.use(interceptor.bind(null, getState));
+    addInterceptors(client.interceptors.response, interceptor, getState);
   });
 }
 
