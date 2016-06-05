@@ -4,7 +4,7 @@
   "description": "Redux middleware for fetching data with axios HTTP client",
   "main": "lib/index.js",
   "scripts": {
-    "preinstall": "npm run prepublish",
+    "preinstall": "npm build",
     "prepublish": "npm run lint && npm run build",
     "build": "node_modules/.bin/babel ./src -d ./lib --ignore '__tests__'",
     "lint": "eslint -c .eslintrc src",
