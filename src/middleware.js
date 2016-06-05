@@ -2,10 +2,10 @@ import * as defaultOptions from './defaults';
 import { getActionTypes } from './getActionTypes';
 
 function bindInterceptors(client, getState, middlewareInterceptors = {}, clientInterceptors = {}) {
-  [...middlewareInterceptors.request, ...clientInterceptors.request].forEach((interceptor) => {
+  [...middlewareInterceptors.request || [], ...clientInterceptors.request || []].forEach((interceptor) => {
     client.interceptors.request.use(interceptor.bind(null, getState));
   });
-  [...middlewareInterceptors.response, ...clientInterceptors.response].forEach((interceptor) => {
+  [...middlewareInterceptors.response || [], ...clientInterceptors.response || []].forEach((interceptor) => {
     client.interceptors.response.use(interceptor.bind(null, getState));
   });
 }
@@ -50,7 +50,8 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   };
 };
 
-export default (client, customMiddlewareOptions) => {
+export default (client, customMiddlewareOptions, customClientOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
-  return multiClientMiddleware({ [middlewareOptions.defaultClientName]: { client } }, middlewareOptions);
+  const options = customClientOptions || {};
+  return multiClientMiddleware({ [middlewareOptions.defaultClientName]: { client, options } }, middlewareOptions);
 };
