@@ -1,20 +1,20 @@
 import * as defaultOptions from './defaults';
 import { getActionTypes } from './getActionTypes';
 
-function addInterceptor(target, candidate, getState) {
+function addInterceptor(target, candidate, getState, dispatch, action) {
   if (!candidate) return;
   const successInterceptor = typeof candidate === 'function' ? candidate : candidate.success;
   const errorInterceptor = candidate && candidate.error;
-  target.use(successInterceptor && successInterceptor.bind(null, getState),
-             errorInterceptor && errorInterceptor.bind(null, getState));
+  target.use(successInterceptor && successInterceptor.bind(null, getState, dispatch, action),
+             errorInterceptor && errorInterceptor.bind(null, getState, dispatch, action));
 }
 
-function bindInterceptors(client, getState, middlewareInterceptors = {}, clientInterceptors = {}) {
+function bindInterceptors(client, getState, dispatch, action, middlewareInterceptors = {}, clientInterceptors = {}) {
   [...middlewareInterceptors.request || [], ...clientInterceptors.request || []].forEach((interceptor) => {
-    addInterceptor(client.interceptors.request, interceptor, getState);
+    addInterceptor(client.interceptors.request, interceptor, getState, dispatch, action);
   });
   [...middlewareInterceptors.response || [], ...clientInterceptors.response || []].forEach((interceptor) => {
-    addInterceptor(client.interceptors.response, interceptor, getState);
+    addInterceptor(client.interceptors.response, interceptor, getState, dispatch, action);
   });
 }
 
@@ -32,7 +32,7 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
     if (!setupedClients[clientName]) {
       const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
       if (clientOptions.interceptors) {
-        bindInterceptors(clients[clientName].client, getState, middlewareOptions.interceptors, clients[clientName].options.interceptors);
+        bindInterceptors(clients[clientName].client, getState, dispatch, action, middlewareOptions.interceptors, clients[clientName].options.interceptors);
       }
       setupedClients[clientName] = {
         client: clients[clientName].client,
