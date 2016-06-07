@@ -138,7 +138,7 @@ Error action is same as success action with one difference, there's no key `payl
 }
 ```
 
-#### if axios failed fatally, default erro action with status `0` will be dispatched.
+#### if axios failed fatally, default error action with status `0` will be dispatched.
 
 ```js
 {
