@@ -13,7 +13,7 @@ npm i -S redux-axios-middleware
 ### Use middleware
 
 By default you only need to import middleware from package and add it to redux middlewares
-and execute it with first aargument being with axios instance. second optional argument are middleware
+and execute it with first argument being with axios instance. second optional argument are middleware
 options for customizing
 
 ```js
@@ -138,7 +138,7 @@ Error action is same as success action with one difference, there's no key `payl
 }
 ```
 
-#### if axios failed fatally, default erro action with status `0` will be dispatched
+#### if axios failed fatally, default erro action with status `0` will be dispatched.
 
 ```js
 {
@@ -155,14 +155,14 @@ Error action is same as success action with one difference, there's no key `payl
 
 ### Multiple clients
 
-If you are using too many APIs, you can define those clients and put them to middleware. All you have to change is import
+If you are using more than one different APIs, you can define those clients and put them to middleware. All you have to change is import
 of middleware, which is passed to redux createStore function and defined those clients. 
 
 ```
-import { multiClientReducer } from 'redux-axios-middleware';
+import { multiClientMiddleware } from 'redux-axios-middleware';
 createStore(
  ...
- multiClientReducer(
+ multiClientMiddleware(
    clients, // described below
    options // optional, this will be used for all middleware if not overriden by upper options layer
  )
