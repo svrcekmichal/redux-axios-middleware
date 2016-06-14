@@ -241,7 +241,7 @@ Legend:
 | getClientName | function | returns `action.payload.client` OR `'default'` | `M` `C` `A` | attempts to resolve used client name or use defaultClientName |
 | defaultClientName | every possible object key type | `'default'` | `M` | key which define client used if `getClienName` returned false value |
 | getRequestOptions | function | return `action.payload.options` | `M` `C` | returns options object from action to override some values |
-| interceptors | object `{request: [], response: []}` |  | `M` `C` | You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is `getState` function |
+| interceptors | object `{request: [], response: []}` |  | `M` `C` | You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is object with `getState`, `dispatch` and `action` keys |
 
 ## License
 
