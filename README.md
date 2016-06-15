@@ -245,7 +245,7 @@ Legend:
 
 ## License
 
-MIT
+This project is licensed under the MIT license, Copyright (c) 2016 Michal Svrček. For more information see `LICENSE.md`.
 
 ## Acknowledgements
 
