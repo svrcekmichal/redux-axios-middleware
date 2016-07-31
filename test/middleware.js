@@ -25,7 +25,7 @@ describe('middleware', () => {
   });
 
   it('should dispatch _SUCCESS', () => {
-    mockAxiosClient.onGet(`${BASE_URL}/test`).reply(200, 'response');
+    mockAxiosClient.onGet('/test').reply(200, 'response');
 
     const expectActions = [{
       type: 'LOAD',
@@ -47,7 +47,7 @@ describe('middleware', () => {
     });
   });
   it('should dispatch _FAIL', () => {
-    mockAxiosClient.onGet(`${BASE_URL}/test`).reply(404);
+    mockAxiosClient.onGet('/test').reply(404);
     const expectActions = [{
       type: 'LOAD',
       payload: {
@@ -59,7 +59,9 @@ describe('middleware', () => {
     }, {
       type: 'LOAD_FAIL',
       error: {
-        status: 404
+        response: {
+          status: 404
+        }
       }
     }];
     const store = mockStore();
