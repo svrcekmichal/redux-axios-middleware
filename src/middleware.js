@@ -21,54 +21,41 @@ function bindInterceptors(client, getState, middlewareInterceptors = {}, clientI
 export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
   const setupedClients = {};
-  return function ({ getState, dispatch }) {
-    const enhancedGetState = function () {
-      console.log(`
-       Warning, getState as function in interceptor will be removed in version 2 of middleware.
-       Stop: interceptor(getState,config) { ... }
-       Do: interceptor({getState}, config) { ... }
-      `);
-      return getState();
-    };
-    enhancedGetState.getState = getState;
-    enhancedGetState.dispatch = dispatch;
-    return next => action => {
-      if (!middlewareOptions.isAxiosRequest(action)) {
-        return next(action);
+  return ({ getState, dispatch }) => next => action => {
+    if (!middlewareOptions.isAxiosRequest(action)) {
+      return next(action);
+    }
+    const clientName = middlewareOptions.getClientName(action) || middlewareOptions.defaultClientName;
+    if (!clients[clientName]) {
+      throw new Error(`Client with name "${clientName}" has not been defined in middleware`);
+    }
+    if (!setupedClients[clientName]) {
+      const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
+      if (clientOptions.interceptors) {
+        bindInterceptors(clients[clientName].client, { getState, dispatch, action },
+          middlewareOptions.interceptors, clients[clientName].options.interceptors);
       }
-      const clientName = middlewareOptions.getClientName(action) || middlewareOptions.defaultClientName;
-      if (!clients[clientName]) {
-        throw new Error(`Client with name "${clientName}" has not been defined in middleware`);
-      }
-      if (!setupedClients[clientName]) {
-        const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
-        if (clientOptions.interceptors) {
-          enhancedGetState.action = action;
-          bindInterceptors(clients[clientName].client, enhancedGetState,
-            middlewareOptions.interceptors, clients[clientName].options.interceptors);
-        }
-        setupedClients[clientName] = {
-          client: clients[clientName].client,
-          options: clientOptions
-        };
-      }
-      const setupedClient = setupedClients[clientName];
-      const actionOptions = { ...setupedClient.options, ...setupedClient.options.getRequestOptions(action) };
-      const [REQUEST] = getActionTypes(action, actionOptions);
-      next({ ...action, type: REQUEST });
-      return setupedClient.client.request(actionOptions.getRequestConfig(action))
-        .then(
-          (response) => {
-            const newAction = actionOptions.onSuccess({ action, next, response, getState, dispatch }, actionOptions);
-            actionOptions.onComplete({ action: newAction, next, getState, dispatch }, actionOptions);
-            return newAction;
-          },
-          (error) => {
-            const newAction = actionOptions.onError({ action, next, error, getState, dispatch }, actionOptions);
-            actionOptions.onComplete({ action: newAction, next, getState, dispatch }, actionOptions);
-            return actionOptions.returnRejectedPromiseOnError ? Promise.reject(newAction) : newAction;
-          });
-    };
+      setupedClients[clientName] = {
+        client: clients[clientName].client,
+        options: clientOptions
+      };
+    }
+    const setupedClient = setupedClients[clientName];
+    const actionOptions = { ...setupedClient.options, ...setupedClient.options.getRequestOptions(action) };
+    const [REQUEST] = getActionTypes(action, actionOptions);
+    next({ ...action, type: REQUEST });
+    return setupedClient.client.request(actionOptions.getRequestConfig(action))
+      .then(
+        (response) => {
+          const newAction = actionOptions.onSuccess({ action, next, response, getState, dispatch }, actionOptions);
+          actionOptions.onComplete({ action: newAction, next, getState, dispatch }, actionOptions);
+          return newAction;
+        },
+        (error) => {
+          const newAction = actionOptions.onError({ action, next, error, getState, dispatch }, actionOptions);
+          actionOptions.onComplete({ action: newAction, next, getState, dispatch }, actionOptions);
+          return actionOptions.returnRejectedPromiseOnError ? Promise.reject(newAction) : newAction;
+        });
   };
 };
 
