@@ -5,9 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import middleware from './../src/middleware';
 
-const BASE_URL = 'mockapi';
 const client = axios.create({
-  baseURL: BASE_URL,
   responseType: 'json'
 });
 

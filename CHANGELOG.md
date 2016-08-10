@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.0.0 ( Aug 10, 2016 )
+- changes to support axios@0.13
+- removed enhanced getState function as first interceptor argument
+
 ## 1.3.0 ( Jun 14, 2016 )
 - added warning to not use first interceptor argument as `getState` function
 - added `dispatch` and `action` to first interceptor argument - [#26](https://github.com/svrcekmichal/redux-axios-middleware/pull/26)
