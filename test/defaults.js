@@ -91,11 +91,13 @@ describe('defaults', () => {
     let resultAction = null;
     let next = (action) => resultAction = action;
     const error = {
-      data: ['Error1','Error2'],
-      status:400,
-      statusTest:'BAD_REQUEST',
-      headers:{},
-      config: {}
+      response: {
+        data: ['Error1','Error2'],
+        status:400,
+        statusTest:'BAD_REQUEST',
+        headers:{},
+        config: {}
+      }
     };
 
     beforeEach(() => {

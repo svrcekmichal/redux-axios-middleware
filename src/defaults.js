@@ -26,7 +26,7 @@ export const onSuccess = ({ action, next, response }, options) => {
 
 export const onError = ({ action, next, error }, options) => {
   let errorObject;
-  if (error instanceof Error) {
+  if (!error.response) {
     errorObject = {
       data: error.message,
       status: 0
