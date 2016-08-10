@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/svrcekmichal/redux-axios-middleware",
   "peerDependencies": {
-    "axios": ">= 0.5"
+    "axios": ">= 0.13"
   },
   "devDependencies": {
     "axios": "^0.13.1",
