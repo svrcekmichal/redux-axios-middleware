@@ -1,5 +1,5 @@
-export const SUCCESS_SUFFIX = 'SUCCESS';
-export const ERROR_SUFFIX = 'FAIL';
+export const SUCCESS_SUFFIX = '_SUCCESS';
+export const ERROR_SUFFIX = '_FAIL';
 
 export const getActionTypes = (action, {
   errorSuffix = ERROR_SUFFIX,
@@ -8,7 +8,7 @@ export const getActionTypes = (action, {
   let types;
   if (typeof action.type !== 'undefined') {
     const { type } = action;
-    types = [type, `${type}_${successSuffix}`, `${type}_${errorSuffix}`];
+    types = [type, `${type}${successSuffix}`, `${type}${errorSuffix}`];
   } else if (typeof action.types !== 'undefined') {
     types = action.types;
   } else {
