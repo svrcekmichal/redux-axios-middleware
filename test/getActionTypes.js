@@ -8,8 +8,8 @@ describe('getActionTypes', () => {
     const types = getActionTypes(action);
     expect(types).to.be.array;
     expect(types[0]).to.equal(action.type);
-    expect(types[1]).to.equal(`${action.type}_${SUCCESS_SUFFIX}`);
-    expect(types[2]).to.equal(`${action.type}_${ERROR_SUFFIX}`);
+    expect(types[1]).to.equal(`${action.type}${SUCCESS_SUFFIX}`);
+    expect(types[2]).to.equal(`${action.type}${ERROR_SUFFIX}`);
   });
 
   it('should return custom types with `types` key', () => {
@@ -35,27 +35,27 @@ describe('getActionTypes', () => {
 
   it('should use custom success sufix if defined', () => {
     const action = {type:'TYPE'};
-    const types = getActionTypes(action, {successSuffix:'AWESOME'});
+    const types = getActionTypes(action, {successSuffix:'_AWESOME'});
     expect(types).to.be.array;
     expect(types[0]).to.equal(action.type);
     expect(types[1]).to.equal(`${action.type}_AWESOME`);
-    expect(types[2]).to.equal(`${action.type}_${ERROR_SUFFIX}`);
+    expect(types[2]).to.equal(`${action.type}${ERROR_SUFFIX}`);
   });
 
   it('should use custom error sufix if defined', () => {
     const action = {type:'TYPE'};
-    const types = getActionTypes(action, {errorSuffix:'OH_NO'});
+    const types = getActionTypes(action, {errorSuffix:'_OH_NO'});
     expect(types).to.be.array;
     expect(types[0]).to.equal(action.type);
-    expect(types[1]).to.equal(`${action.type}_${SUCCESS_SUFFIX}`);
+    expect(types[1]).to.equal(`${action.type}${SUCCESS_SUFFIX}`);
     expect(types[2]).to.equal(`${action.type}_OH_NO`);
   });
 
   it('should use custom success and error sufix if defined', () => {
     const action = {type:'TYPE'};
     const types = getActionTypes(action,{
-      successSuffix:'AWESOME',
-      errorSuffix:'OH_NO'
+      successSuffix:'_AWESOME',
+      errorSuffix:'_OH_NO'
     });
     expect(types).to.be.array;
     expect(types[0]).to.equal(action.type);
@@ -64,7 +64,3 @@ describe('getActionTypes', () => {
   });
 
 });
-
-
-
-
