@@ -29,7 +29,6 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
       return next(action);
     }
 
-    // Cancellable
     if (action.payload.cancellable) {
       const requestId = typeof requests[action.type] !== 'undefined' ? requests[action.type] + 1 : 1;
       actionRequestId = requestId;
@@ -58,7 +57,6 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
     return setupedClient.client.request(actionOptions.getRequestConfig(action))
       .then(
         (response) => {
-          // Cancellable
           if (action.payload.cancellable) {
             if (actionRequestId !== requests[action.type]) {
               if (process && process.env && process.env.NODE_ENV === 'development') {
@@ -73,7 +71,6 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
           return newAction;
         },
         (error) => {
-          // Cancellable
           if (action.payload.cancellable) {
             if (actionRequestId !== requests[action.type]) {
               if (process && process.env && process.env.NODE_ENV === 'development') {
