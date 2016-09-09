@@ -18,13 +18,24 @@ function bindInterceptors(client, getState, middlewareInterceptors = {}, clientI
   });
 }
 
+const requests = {};
+
 export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
   const setupedClients = {};
+  let actionRequestId = null;
   return ({ getState, dispatch }) => next => action => {
     if (!middlewareOptions.isAxiosRequest(action)) {
       return next(action);
     }
+
+    // Cancellable
+    if (action.payload.cancellable) {
+      const requestId = typeof requests[action.type] !== 'undefined' ? requests[action.type] + 1 : 1;
+      actionRequestId = requestId;
+      requests[action.type] = requestId;
+    }
+
     const clientName = middlewareOptions.getClientName(action) || middlewareOptions.defaultClientName;
     if (!clients[clientName]) {
       throw new Error(`Client with name "${clientName}" has not been defined in middleware`);
@@ -47,11 +58,31 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
     return setupedClient.client.request(actionOptions.getRequestConfig(action))
       .then(
         (response) => {
+          // Cancellable
+          if (action.payload.cancellable) {
+            if (actionRequestId !== requests[action.type]) {
+              if (process && process.env && process.env.NODE_ENV === 'development') {
+                return console.info(`Action ${action.type} cancelled`);
+              }
+
+              return false;
+            }
+          }
           const newAction = actionOptions.onSuccess({ action, next, response, getState, dispatch }, actionOptions);
           actionOptions.onComplete({ action: newAction, next, getState, dispatch }, actionOptions);
           return newAction;
         },
         (error) => {
+          // Cancellable
+          if (action.payload.cancellable) {
+            if (actionRequestId !== requests[action.type]) {
+              if (process && process.env && process.env.NODE_ENV === 'development') {
+                return console.info(`Action ${action.type} cancelled`);
+              }
+
+              return false;
+            }
+          }
           const newAction = actionOptions.onError({ action, next, error, getState, dispatch }, actionOptions);
           actionOptions.onComplete({ action: newAction, next, getState, dispatch }, actionOptions);
           return actionOptions.returnRejectedPromiseOnError ? Promise.reject(newAction) : newAction;
