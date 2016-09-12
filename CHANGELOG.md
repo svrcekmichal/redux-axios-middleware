@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 3.0.0 ( Sep 8, 2016 )
+- changed default action prefixing
+
 ## 2.0.0 ( Aug 10, 2016 )
 - changes to support axios@0.13
 - removed enhanced getState function as first interceptor argument
