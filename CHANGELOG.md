@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 3.1.0 ( Nov 23, 2016 )
+- in interceptors, you can use `getAction` to receive action which triggered interceptors, for now, bug with `action` will not be removed, but it'll be removed in 4.0 as it is breaking change
+
 ## 3.0.0 ( Sep 8, 2016 )
 - changed default action prefixing
 

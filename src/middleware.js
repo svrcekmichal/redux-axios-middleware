@@ -1,30 +1,32 @@
 import * as defaultOptions from './defaults';
 import { getActionTypes } from './getActionTypes';
 
-function addInterceptor(target, candidate, getState) {
+function addInterceptor(target, candidate, injectedParameters) {
   if (!candidate) return;
   const successInterceptor = typeof candidate === 'function' ? candidate : candidate.success;
   const errorInterceptor = candidate && candidate.error;
-  target.use(successInterceptor && successInterceptor.bind(null, getState),
-    errorInterceptor && errorInterceptor.bind(null, getState));
+  target.use(successInterceptor && successInterceptor.bind(null, injectedParameters),
+    errorInterceptor && errorInterceptor.bind(null, injectedParameters));
 }
 
-function bindInterceptors(client, getState, middlewareInterceptors = {}, clientInterceptors = {}) {
+function bindInterceptors(client, injectedParameters, middlewareInterceptors = {}, clientInterceptors = {}) {
   [...middlewareInterceptors.request || [], ...clientInterceptors.request || []].forEach((interceptor) => {
-    addInterceptor(client.interceptors.request, interceptor, getState);
+    addInterceptor(client.interceptors.request, interceptor, injectedParameters);
   });
   [...middlewareInterceptors.response || [], ...clientInterceptors.response || []].forEach((interceptor) => {
-    addInterceptor(client.interceptors.response, interceptor, getState);
+    addInterceptor(client.interceptors.response, interceptor, injectedParameters);
   });
 }
 
 export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
   const setupedClients = {};
+  let storedAction;
   return ({ getState, dispatch }) => next => action => {
     if (!middlewareOptions.isAxiosRequest(action)) {
       return next(action);
     }
+    storedAction = action;
     const clientName = middlewareOptions.getClientName(action) || middlewareOptions.defaultClientName;
     if (!clients[clientName]) {
       throw new Error(`Client with name "${clientName}" has not been defined in middleware`);
@@ -32,7 +34,9 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
     if (!setupedClients[clientName]) {
       const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
       if (clientOptions.interceptors) {
-        bindInterceptors(clients[clientName].client, { getState, dispatch, action },
+        const getAction = () => storedAction;
+        const injectToInterceptor = { getState, dispatch, action, getAction };
+        bindInterceptors(clients[clientName].client, injectToInterceptor,
           middlewareOptions.interceptors, clients[clientName].options.interceptors);
       }
       setupedClients[clientName] = {
