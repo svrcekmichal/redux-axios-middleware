@@ -35,9 +35,10 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
       const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
       if (clientOptions.interceptors) {
         const getAction = () => storedAction;
+        const middlewareInterceptors = middlewareOptions.interceptors;
+        const clientInterceptors = clients[clientName].options && clients[clientName].options.interceptors;
         const injectToInterceptor = { getState, dispatch, action, getAction };
-        bindInterceptors(clients[clientName].client, injectToInterceptor,
-          middlewareOptions.interceptors, clients[clientName].options.interceptors);
+        bindInterceptors(clients[clientName].client, injectToInterceptor, middlewareInterceptors, clientInterceptors);
       }
       setupedClients[clientName] = {
         client: clients[clientName].client,
