@@ -6,6 +6,8 @@ export const defaultClientName = 'default';
 
 export const isAxiosRequest = action => action.payload && action.payload.request;
 
+export const isCancel = value => !!(value && value.__CANCEL__);
+
 export const getRequestConfig = action => action.payload.request;
 
 export const getClientName = action => action.payload.client;
@@ -26,6 +28,10 @@ export const onSuccess = ({ action, next, response }, options) => {
 
 export const onError = ({ action, next, error }, options) => {
   let errorObject;
+  let nextAction;
+
+  console.log('onError', error, isCancel(error));
+
   if (!error.response) {
     errorObject = {
       data: error.message,
@@ -37,13 +43,24 @@ export const onError = ({ action, next, error }, options) => {
   } else {
     errorObject = error;
   }
-  const nextAction = {
-    type: getActionTypes(action, options)[2],
-    error: errorObject,
-    meta: {
-      previousAction: action
-    }
-  };
+
+  if (isCancel(error)) {
+    nextAction = {
+      type: getActionTypes(action, options)[3],
+      error: errorObject,
+      meta: {
+        previousAction: action
+      }
+    };
+  } else {
+    nextAction = {
+      type: getActionTypes(action, options)[2],
+      error: errorObject,
+      meta: {
+        previousAction: action
+      }
+    };
+  }
 
   next(nextAction);
   return nextAction;

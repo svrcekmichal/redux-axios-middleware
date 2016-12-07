@@ -52,6 +52,10 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
           return newAction;
         },
         (error) => {
+          // let newAction;
+          // if (middlewareOptions.isCancel(error)) {
+          //   newAction = actionOptions.onCancel({ action, next, error, getState, dispatch }, actionOptions);
+          // }
           const newAction = actionOptions.onError({ action, next, error, getState, dispatch }, actionOptions);
           actionOptions.onComplete({ action: newAction, next, getState, dispatch }, actionOptions);
           return actionOptions.returnRejectedPromiseOnError ? Promise.reject(newAction) : newAction;
