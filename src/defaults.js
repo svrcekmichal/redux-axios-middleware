@@ -26,11 +26,25 @@ export const onSuccess = ({ action, next, response }, options) => {
   return nextAction;
 };
 
+export const onCancel = ({ action, next, error }, options) => {
+  const nextAction = {
+    type: getActionTypes(action, options)[3],
+    error: {
+      data: error.message,
+      status: 0
+    },
+    cancelled: true,
+    meta: {
+      previousAction: action
+    }
+  };
+
+  next(nextAction);
+  return nextAction;
+};
+
 export const onError = ({ action, next, error }, options) => {
   let errorObject;
-  let nextAction;
-
-  console.log('onError', error, isCancel(error));
 
   if (!error.response) {
     errorObject = {
@@ -44,23 +58,13 @@ export const onError = ({ action, next, error }, options) => {
     errorObject = error;
   }
 
-  if (isCancel(error)) {
-    nextAction = {
-      type: getActionTypes(action, options)[3],
-      error: errorObject,
-      meta: {
-        previousAction: action
-      }
-    };
-  } else {
-    nextAction = {
-      type: getActionTypes(action, options)[2],
-      error: errorObject,
-      meta: {
-        previousAction: action
-      }
-    };
-  }
+  const nextAction = {
+    type: getActionTypes(action, options)[2],
+    error: errorObject,
+    meta: {
+      previousAction: action
+    }
+  };
 
   next(nextAction);
   return nextAction;
