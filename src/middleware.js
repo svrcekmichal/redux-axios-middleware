@@ -18,38 +18,51 @@ function bindInterceptors(client, injectedParameters, middlewareInterceptors = {
   });
 }
 
+function getSourceAction(config) {
+  return config.reduxSourceAction;
+}
+
 export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
   const setupedClients = {};
-  let storedAction;
+
   return ({ getState, dispatch }) => next => action => {
     if (!middlewareOptions.isAxiosRequest(action)) {
       return next(action);
     }
-    storedAction = action;
+
     const clientName = middlewareOptions.getClientName(action) || middlewareOptions.defaultClientName;
+
     if (!clients[clientName]) {
       throw new Error(`Client with name "${clientName}" has not been defined in middleware`);
     }
+
     if (!setupedClients[clientName]) {
       const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
+
       if (clientOptions.interceptors) {
-        const getAction = () => storedAction;
         const middlewareInterceptors = middlewareOptions.interceptors;
         const clientInterceptors = clients[clientName].options && clients[clientName].options.interceptors;
-        const injectToInterceptor = { getState, dispatch, action, getAction };
+        const injectToInterceptor = { getState, dispatch, action, getSourceAction};
         bindInterceptors(clients[clientName].client, injectToInterceptor, middlewareInterceptors, clientInterceptors);
       }
+
       setupedClients[clientName] = {
         client: clients[clientName].client,
         options: clientOptions
       };
     }
+
     const setupedClient = setupedClients[clientName];
     const actionOptions = { ...setupedClient.options, ...setupedClient.options.getRequestOptions(action) };
     const [REQUEST] = getActionTypes(action, actionOptions);
     next({ ...action, type: REQUEST });
-    return setupedClient.client.request(actionOptions.getRequestConfig(action))
+
+    const requestConfig = {
+      ...actionOptions.getRequestConfig(action),
+      reduxSourceAction: action
+    };
+    return setupedClient.client.request(requestConfig)
       .then(
         (response) => {
           const newAction = actionOptions.onSuccess({ action, next, response, getState, dispatch }, actionOptions);
