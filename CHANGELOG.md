@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 3.1.0 ( Feb 17, 2017 )
+## 3.1.1 ( Feb 17, 2017 )
 - corrected the entry for the webpack config
 
 ## 3.1.0 ( Feb 17, 2017 )
