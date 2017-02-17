@@ -5,4 +5,6 @@ export {
 
 export {
   getActionTypes,
+  ERROR_SUFFIX,
+  SUCCESS_SUFFIX,
 } from './getActionTypes';
