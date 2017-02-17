@@ -1,5 +1,8 @@
 # redux-axios-middleware
 
+[![npm version](https://badge.fury.io/js/redux-axios-middleware.svg)](https://badge.fury.io/js/redux-axios-middleware)
+
+
 Redux middleware for fetching data with axios HTTP client
 
 ## Installation
@@ -7,6 +10,9 @@ Redux middleware for fetching data with axios HTTP client
 ```bash
 npm i -S redux-axios-middleware
 ```
+
+> You can also use in browser via `<script src="https://unpkg.com/redux-axios-middleware@3.1.0/dist/bundle.js"></script>`, 
+the package will be available under namespace `ReduxAxiosMiddleware`
 
 ## How to use?
 
