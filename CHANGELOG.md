@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.1.0 ( Feb 17, 2017 )
+- add webpack build to support UMD [#40](https://github.com/svrcekmichal/redux-axios-middleware/issues/40)
+- exported success and error suffixes [#42](https://github.com/svrcekmichal/redux-axios-middleware/issues/42)
+
 ## 3.0.0 ( Sep 8, 2016 )
 - changed default action prefixing
 
