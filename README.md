@@ -11,7 +11,7 @@ Redux middleware for fetching data with axios HTTP client
 npm i -S redux-axios-middleware
 ```
 
-> You can also use in browser via `<script src="https://unpkg.com/redux-axios-middleware@3.1.0/dist/bundle.js"></script>`, 
+> You can also use in browser via `<script src="https://unpkg.com/redux-axios-middleware/dist/bundle.js"></script>`, 
 the package will be available under namespace `ReduxAxiosMiddleware`
 
 ## How to use?
