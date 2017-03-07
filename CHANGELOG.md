@@ -1,7 +1,14 @@
 # CHANGELOG
 
-## 3.1.0 ( Nov 23, 2016 )
-- in interceptors, you can use `getAction` to receive action which triggered interceptors, for now, bug with `action` will not be removed, but it'll be removed in 4.0 as it is breaking change
+## 3.1.2 ( Feb 20, 2017 )
+- exclude our .babelrc from our npm build.
+
+## 3.1.1 ( Feb 17, 2017 )
+- corrected the entry for the webpack config
+
+## 3.1.0 ( Feb 17, 2017 )
+- add webpack build to support UMD [#40](https://github.com/svrcekmichal/redux-axios-middleware/issues/40)
+- exported success and error suffixes [#42](https://github.com/svrcekmichal/redux-axios-middleware/issues/42)
 
 ## 3.0.0 ( Sep 8, 2016 )
 - changed default action prefixing
