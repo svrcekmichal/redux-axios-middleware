@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 3.1.2 ( Feb 20, 2017 )
+- exclude our .babelrc from our npm build.
+
 ## 3.1.1 ( Feb 17, 2017 )
 - corrected the entry for the webpack config
 
