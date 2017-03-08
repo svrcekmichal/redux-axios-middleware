@@ -20,7 +20,7 @@ function bindInterceptors(client, injectedParameters, middlewareInterceptors = {
 
 export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
-  const setupedClients = {};
+  const initializedClients = {};
   let storedAction;
   return ({ getState, dispatch }) => next => action => {
     if (!middlewareOptions.isAxiosRequest(action)) {
@@ -31,7 +31,7 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
     if (!clients[clientName]) {
       throw new Error(`Client with name "${clientName}" has not been defined in middleware`);
     }
-    if (!setupedClients[clientName]) {
+    if (!initializedClients[clientName]) {
       const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
       if (clientOptions.interceptors) {
         const getAction = () => storedAction;
@@ -40,16 +40,16 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
         const injectToInterceptor = { getState, dispatch, getAction };
         bindInterceptors(clients[clientName].client, injectToInterceptor, middlewareInterceptors, clientInterceptors);
       }
-      setupedClients[clientName] = {
+      initializedClients[clientName] = {
         client: clients[clientName].client,
         options: clientOptions
       };
     }
-    const setupedClient = setupedClients[clientName];
-    const actionOptions = { ...setupedClient.options, ...setupedClient.options.getRequestOptions(action) };
+    const client = initializedClients[clientName];
+    const actionOptions = { ...client.options, ...client.options.getRequestOptions(action) };
     const [REQUEST] = getActionTypes(action, actionOptions);
     next({ ...action, type: REQUEST });
-    return setupedClient.client.request(actionOptions.getRequestConfig(action))
+    return client.client.request(actionOptions.getRequestConfig(action))
       .then(
         (response) => {
           const newAction = actionOptions.onSuccess({ action, next, response, getState, dispatch }, actionOptions);
