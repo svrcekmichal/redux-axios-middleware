@@ -185,7 +185,7 @@ var multiClientMiddleware = exports.multiClientMiddleware = function multiClient
           if (clientOptions.interceptors) {
             var middlewareInterceptors = middlewareOptions.interceptors;
             var clientInterceptors = clients[clientName].options && clients[clientName].options.interceptors;
-            var injectToInterceptor = { getState: getState, dispatch: dispatch, action: action, getSourceAction: getSourceAction };
+            var injectToInterceptor = { getState: getState, dispatch: dispatch, getSourceAction: getSourceAction };
             bindInterceptors(clients[clientName].client, injectToInterceptor, middlewareInterceptors, clientInterceptors);
           }
 
