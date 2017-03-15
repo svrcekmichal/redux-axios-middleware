@@ -11,41 +11,41 @@
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
 /******/ 			l: false,
 /******/ 			exports: {}
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.l = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// identity function for calling harmony imports with the correct context
 /******/ 	__webpack_require__.i = function(value) { return value; };
-
+/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -56,7 +56,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 			});
 /******/ 		}
 /******/ 	};
-
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -65,13 +65,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 		__webpack_require__.d(getter, 'a', getter);
 /******/ 		return getter;
 /******/ 	};
-
+/******/
 /******/ 	// Object.prototype.hasOwnProperty.call
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
@@ -137,28 +137,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function addInterceptor(target, candidate, getState) {
+function addInterceptor(target, candidate, injectedParameters) {
   if (!candidate) return;
   var successInterceptor = typeof candidate === 'function' ? candidate : candidate.success;
   var errorInterceptor = candidate && candidate.error;
-  target.use(successInterceptor && successInterceptor.bind(null, getState), errorInterceptor && errorInterceptor.bind(null, getState));
+  target.use(successInterceptor && successInterceptor.bind(null, injectedParameters), errorInterceptor && errorInterceptor.bind(null, injectedParameters));
 }
 
-function bindInterceptors(client, getState) {
+function bindInterceptors(client, injectedParameters) {
   var middlewareInterceptors = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var clientInterceptors = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   [].concat(_toConsumableArray(middlewareInterceptors.request || []), _toConsumableArray(clientInterceptors.request || [])).forEach(function (interceptor) {
-    addInterceptor(client.interceptors.request, interceptor, getState);
+    addInterceptor(client.interceptors.request, interceptor, injectedParameters);
   });
   [].concat(_toConsumableArray(middlewareInterceptors.response || []), _toConsumableArray(clientInterceptors.response || [])).forEach(function (interceptor) {
-    addInterceptor(client.interceptors.response, interceptor, getState);
+    addInterceptor(client.interceptors.response, interceptor, injectedParameters);
   });
+}
+
+function getSourceAction(config) {
+  return config.reduxSourceAction;
 }
 
 var multiClientMiddleware = exports.multiClientMiddleware = function multiClientMiddleware(clients, customMiddlewareOptions) {
   var middlewareOptions = _extends({}, defaultOptions, customMiddlewareOptions);
   var setupedClients = {};
+
   return function (_ref) {
     var getState = _ref.getState,
         dispatch = _ref.dispatch;
@@ -167,20 +172,29 @@ var multiClientMiddleware = exports.multiClientMiddleware = function multiClient
         if (!middlewareOptions.isAxiosRequest(action)) {
           return next(action);
         }
+
         var clientName = middlewareOptions.getClientName(action) || middlewareOptions.defaultClientName;
+
         if (!clients[clientName]) {
           throw new Error('Client with name "' + clientName + '" has not been defined in middleware');
         }
+
         if (!setupedClients[clientName]) {
           var clientOptions = _extends({}, middlewareOptions, clients[clientName].options);
+
           if (clientOptions.interceptors) {
-            bindInterceptors(clients[clientName].client, { getState: getState, dispatch: dispatch, action: action }, middlewareOptions.interceptors, clients[clientName].options.interceptors);
+            var middlewareInterceptors = middlewareOptions.interceptors;
+            var clientInterceptors = clients[clientName].options && clients[clientName].options.interceptors;
+            var injectToInterceptor = { getState: getState, dispatch: dispatch, action: action, getSourceAction: getSourceAction };
+            bindInterceptors(clients[clientName].client, injectToInterceptor, middlewareInterceptors, clientInterceptors);
           }
+
           setupedClients[clientName] = {
             client: clients[clientName].client,
             options: clientOptions
           };
         }
+
         var setupedClient = setupedClients[clientName];
         var actionOptions = _extends({}, setupedClient.options, setupedClient.options.getRequestOptions(action));
 
@@ -189,7 +203,11 @@ var multiClientMiddleware = exports.multiClientMiddleware = function multiClient
             REQUEST = _getActionTypes2[0];
 
         next(_extends({}, action, { type: REQUEST }));
-        return setupedClient.client.request(actionOptions.getRequestConfig(action)).then(function (response) {
+
+        var requestConfig = _extends({}, actionOptions.getRequestConfig(action), {
+          reduxSourceAction: action
+        });
+        return setupedClient.client.request(requestConfig).then(function (response) {
           var newAction = actionOptions.onSuccess({ action: action, next: next, response: response, getState: getState, dispatch: dispatch }, actionOptions);
           actionOptions.onComplete({ action: newAction, next: next, getState: getState, dispatch: dispatch }, actionOptions);
           return newAction;

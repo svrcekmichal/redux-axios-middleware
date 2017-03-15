@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 3.1.3 ( March 15, 2017 )
+- in interceptors, you can use `getAction` to receive action which triggered interceptors, for now, bug with `action` will not be removed, but it'll be removed in 4.0 as it is breaking change
+
 ## 3.1.2 ( Feb 20, 2017 )
 - exclude our .babelrc from our npm build.
 
