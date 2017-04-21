@@ -272,7 +272,8 @@ Example:
     };
   ```
   In example above if request and\or response succeeded interceptors will be invoked. 
-  To set interceptors what will handle error on request or response pass an object to `request` or `response` arrays with corresponding `success` or `error` functions 
+  To set interceptors what will handle error on request or response pass an object to `request` and\or `response` arrays with corresponding `success` and\or `error` functions.
+  
   Example:
   ```javascript
     const middlewareConfig = {
@@ -282,7 +283,7 @@ Example:
             console.log(req); //contains information about request object
             //...
           },
-          error: function ({getState, dispatch, getSourceAction}, req) {
+          error: function ({getState, dispatch, getSourceAction}, error) {
             //...
           }
         }
@@ -292,7 +293,7 @@ Example:
             console.log(req); //contains information about request object
             //...
           },
-          error: function ({getState, dispatch, getSourceAction}, req) {
+          error: function ({getState, dispatch, getSourceAction}, error) {
             //...
           }
         }
