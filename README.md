@@ -244,6 +244,63 @@ defaultClientName            | every possible object key type       | `'default'
 getRequestOptions            | function                             | return `action.payload.options`                           | `M` `C`      | returns options object from action to override some values
 interceptors                 | object `{request: [], response: []}` |                                                           | `M` `C`      | You can pass axios request and response interceptors. Take care, first argument of interceptor is different from default axios interceptor, first received argument is object with `getState`, `dispatch` and `getAction` keys
 
+#### interceptors
+interceptors can be added to the middleware 2 different ways:
+Example:
+  ```javascript
+    const middlewareConfig = {
+      interceptors: {
+        request: [
+          function ({getState, dispatch, getSourceAction}, req) {
+            console.log(req); //contains information about request object
+            //...
+          },
+          function ({getState, dispatch, getSourceAction}, req) {
+            //...
+          }
+        ],
+        response: [
+          function ({getState, dispatch, getSourceAction}, req) {
+            console.log(req); //contains information about request object
+            //...
+          },
+          function ({getState, dispatch, getSourceAction}, req) {
+            //...
+          }
+        ]
+      }
+    };
+  ```
+  In example above if request and\or response succeeded interceptors will be invoked. 
+  To set interceptors what will handle error on request or response pass an object to `request` or `response` arrays with corresponding `success` or `error` functions 
+  Example:
+  ```javascript
+    const middlewareConfig = {
+      interceptors: {
+        request: [{
+          success: function ({getState, dispatch, getSourceAction}, req) {
+            console.log(req); //contains information about request object
+            //...
+          },
+          error: function ({getState, dispatch, getSourceAction}, req) {
+            //...
+          }
+        }
+        ],
+        response: [{
+          success: function ({getState, dispatch, getSourceAction}, req) {
+            console.log(req); //contains information about request object
+            //...
+          },
+          error: function ({getState, dispatch, getSourceAction}, req) {
+            //...
+          }
+        }
+        ]
+      }
+    };
+  ```
+
 ## License
 
 This project is licensed under the MIT license, Copyright (c) 2016 Michal Svrček. For more information see `LICENSE.md`.
