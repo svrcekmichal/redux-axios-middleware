@@ -302,6 +302,11 @@ Example:
     };
   ```
 
+## Examples
+  
+  * [react-redux/redux-axios-middleware with .NET Core Web API](https://github.com/Odonno/react-redux-axios-middleware-netcore-example)
+
+
 ## License
 
 This project is licensed under the MIT license, Copyright (c) 2016 Michal Svrček. For more information see `LICENSE.md`.
