@@ -6,7 +6,7 @@ export interface suffixTypes {
 }
 
 export interface axiosMiddleware extends suffixTypes {
-  default: (client: any, customMiddleWareOptions: any, customClientOptions: any) => any;
+  default: (client: AxiosInstance, customMiddleWareOptions: any, customClientOptions: any) => any;
   getActionTypes: (action: any) => any;
   multiClientMiddleware: (client: any, customMiddleWareOptions: any) => any;
 
@@ -16,6 +16,8 @@ export interface axiosMiddleware extends suffixTypes {
 
 export interface IClientsList {
   [name: string]: { client: AxiosInstance };
+
+  default: { client: AxiosInstance };
 }
 
 declare const axiosMiddleware: axiosMiddleware;
