@@ -10,13 +10,17 @@ export interface axiosMiddleware extends suffixTypes {
   getActionTypes: (action: any) => any;
   multiClientMiddleware: (client: any, customMiddleWareOptions: any) => any;
 
-  (client?: any, customMiddleWareOptions?: any, customClientOptions?: any): any;
+  (client: AxiosInstance, customMiddleWareOptions?: any, customClientOptions?: any): any;
 }
 
 
+export interface IClientsList {
+  [name: string]: { client: AxiosInstance };
+}
+
 declare const axiosMiddleware: axiosMiddleware;
 
-export function multiClientMiddleware(clients?: any, customMiddlewareOptions?: any): any;
+export function multiClientMiddleware(clients?: IClientsList, customMiddlewareOptions?: any): any;
 
 export const returnRejectedPromiseOnError: boolean;
 
