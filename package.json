@@ -3,6 +3,7 @@
   "version": "4.0.0",
   "description": "Redux middleware for fetching data with axios HTTP client",
   "main": "dist/bundle.js",
+  "typings": "./index.d.ts",
   "scripts": {
     "prepublish": "npm run lint && npm run build",
     "build": "webpack",
