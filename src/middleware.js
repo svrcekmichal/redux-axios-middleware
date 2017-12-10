@@ -77,8 +77,8 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
   };
 };
 
-export default (client, customMiddlewareOptions, customClientOptions) => {
+export default (clients, customMiddlewareOptions, customClientOptions) => {
   const middlewareOptions = { ...defaultOptions, ...customMiddlewareOptions };
   const options = customClientOptions || {};
-  return multiClientMiddleware({ [middlewareOptions.defaultClientName]: { client, options } }, middlewareOptions);
+  return multiClientMiddleware(clients, middlewareOptions);
 };
