@@ -40,11 +40,11 @@ export const multiClientMiddleware = (clients, customMiddlewareOptions) => {
     if (!setupedClients[clientName]) {
       const clientOptions = { ...middlewareOptions, ...clients[clientName].options };
       if (clientOptions.interceptors) {
-          var actionOptions = action.payload.options || {};
+          let actionOptions = action.payload.options || {};
           var middlewareInterceptors = middlewareOptions.interceptors;
           var clientInterceptors = clients[clientName].options && clients[clientName].options.interceptors;
           var actionInterceptors = actionOptions.interceptors || {};
-	        clientInterceptors = Object.assign(clientInterceptors, actionInterceptors);
+	  clientInterceptors = Object.assign(clientInterceptors, actionInterceptors);
           var injectToInterceptor = { getState: getState, dispatch: dispatch, getSourceAction: getSourceAction };
           bindInterceptors(clients[clientName].client, injectToInterceptor, middlewareInterceptors, clientInterceptors);
       }
