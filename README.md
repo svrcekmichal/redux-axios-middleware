@@ -35,7 +35,7 @@ let store = createStore(
   applyMiddleware(
     //all middlewares
     ...
-    axiosMiddleware(client), //second parameter options can optionally contain onSuccess, onError, onComplete, successSuffix, errorSuffix
+    axiosMiddleware(client), //second parameter options can optionally contain onSuccess, onError, onComplete, successSuffix, errorSuffix, requestSuffix
     ...
   )
 )
@@ -233,6 +233,7 @@ key                          | type                                 | default va
 ---------------------------- | ------------------------------------ | --------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 successSuffix                | string                               | SUCCESS                                                   | `M` `C` `A`  | default suffix added to success action, for example `{type:"READ"}` will be `{type:"READ_SUCCESS"}`
 errorSuffix                  | string                               | FAIL                                                      | `M` `C` `A`  | same as above
+requestSuffix                | string                               |                                                           | `M` `C` `A`  | same as above
 onSuccess                    | function                             | described above                                           | `M` `C` `A`  | function called if axios resolve with success
 onError                      | function                             | described above                                           | `M` `C` `A`  | function called if axios resolve with error
 onComplete                   | function                             | described above                                           | `M` `C` `A`  | function called after axios resolve
