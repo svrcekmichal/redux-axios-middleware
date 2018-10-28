@@ -295,6 +295,7 @@ Example:
           },
           error: function ({getState, dispatch, getSourceAction}, error) {
             //...
+            return Promise.reject(error)
           }
         }
         ]
