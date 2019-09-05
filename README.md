@@ -294,10 +294,9 @@ Example:
           success: function ({getState, dispatch, getSourceAction}, res) {
             console.log(res); //contains information about request object
             //...
-            return res;
+            return Promise.resolve(res);
           },
           error: function ({getState, dispatch, getSourceAction}, error) {
-            //...
             return Promise.reject(error);
           }
         }
