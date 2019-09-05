@@ -282,26 +282,43 @@ Example:
           success: function ({getState, dispatch, getSourceAction}, req) {
             console.log(req); //contains information about request object
             //...
+            return req;
           },
           error: function ({getState, dispatch, getSourceAction}, error) {
             //...
+            return response
           }
         }
         ],
         response: [{
-          success: function ({getState, dispatch, getSourceAction}, req) {
-            console.log(req); //contains information about request object
+          success: function ({getState, dispatch, getSourceAction}, res) {
+            console.log(res); //contains information about request object
             //...
+            return Promise.resolve(res);
           },
           error: function ({getState, dispatch, getSourceAction}, error) {
-            //...
-            return Promise.reject(error)
+            return Promise.reject(error);
           }
         }
         ]
       }
     };
   ```
+
+Finally, to include the middlewareConfig here is the relevant part of the example copied from the top of this file.
+
+```js
+let store = createStore(
+  reducers, //custom reducers
+  applyMiddleware(
+    //all middlewares
+    ...
+    axiosMiddleware(client,middlewareConfig),
+    ...
+  )
+)
+
+
 
 ## Examples
   
