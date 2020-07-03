@@ -16,13 +16,13 @@ type Options = Partial<{
 }>;
 
 export type AxiosMiddleware = {
-  default: (client: AxiosInstance, customMiddleWareOptions: Options, customClientOptions: any) => any;
+  default: (client: AxiosInstance, customMiddleWareOptions?: Options, customClientOptions?: any) => any;
   getActionTypes: (action: any) => any;
-  multiClientMiddleware: (client: any, customMiddleWareOptions: Options) => any;
+  multiClientMiddleware: (client: any, customMiddleWareOptions?: Options) => any;
   (client: AxiosInstance, customMiddleWareOptions?: Options, customClientOptions?: any): any;
 }
 
-type Client = { client: AxiosInstance, options: Options };
+type Client = { client: AxiosInstance, options?: Options };
 
 export type ClientsList = {
   [name: string]: Client;
