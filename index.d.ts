@@ -12,7 +12,7 @@ type Options = Partial<{
   getClientName: AxiosInstance;
   defaultClientName: string;
   getRequestOptions: any;
-  interceptors: {request: [], response: []};
+  interceptors: { request?: any[], response?: any[] };
 }>;
 
 export type AxiosMiddleware = {
