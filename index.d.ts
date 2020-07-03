@@ -1,46 +1,35 @@
-import axios, {AxiosInstance, AxiosError, AxiosResponse} from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 
-export interface suffixTypes {
+type Options = Partial<{
   errorSuffix: string;
   successSuffix: string;
-}
+  onSuccess({action, next, response}?: any, options?: any): any;
+  onError({action, next, response}?: any, options?: any): any;
+  onComplete(): any;
+  returnRejectedPromiseOnError: boolean;
+  isAxiosRequest: boolean;
+  getRequestConfig: AxiosResponse;
+  getClientName: AxiosInstance;
+  defaultClientName: string;
+  getRequestOptions: any;
+  interceptors: {request: [], response: []};
+}>;
 
-export interface axiosMiddleware extends suffixTypes {
-  default: (client: AxiosInstance, customMiddleWareOptions: any, customClientOptions: any) => any;
+export type AxiosMiddleware = {
+  default: (client: AxiosInstance, customMiddleWareOptions: Options, customClientOptions: any) => any;
   getActionTypes: (action: any) => any;
-  multiClientMiddleware: (client: any, customMiddleWareOptions: any) => any;
-
-  (client: AxiosInstance, customMiddleWareOptions?: any, customClientOptions?: any): any;
+  multiClientMiddleware: (client: any, customMiddleWareOptions: Options) => any;
+  (client: AxiosInstance, customMiddleWareOptions?: Options, customClientOptions?: any): any;
 }
 
+type Client = { client: AxiosInstance, options: Options };
 
-export interface IClientsList {
-  [name: string]: { client: AxiosInstance };
-
-  default: { client: AxiosInstance };
+export type ClientsList = {
+  [name: string]: Client;
+  default: Client;
 }
 
-declare const axiosMiddleware: axiosMiddleware;
+export function multiClientMiddleware(clients?: ClientsList, customMiddlewareOptions?: Options): any;
 
-export function multiClientMiddleware(clients?: IClientsList, customMiddlewareOptions?: any): any;
-
-export const returnRejectedPromiseOnError: boolean;
-
-export const defaultClientName: string;
-
-export const isAxiosRequest: boolean;
-
-export const getRequestConfig: AxiosResponse;
-
-export const getClientName: AxiosInstance;
-
-export const getRequestOptions: any;
-
-export function onSuccess({action, next, response}?: any, options?: any): any;
-
-export function onError({action, next, response}?: any, options?: any): any;
-
-export function onComplete(): any;
-
-
-export default axiosMiddleware;
+declare const axiosMiddleware: AxiosMiddleware;
+export default AxiosMiddleware;
