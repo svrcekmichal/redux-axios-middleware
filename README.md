@@ -317,7 +317,7 @@ let store = createStore(
     ...
   )
 )
-
+```
 
 
 ## Examples
